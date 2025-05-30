@@ -1,0 +1,23 @@
+mode: backtest
+
+strategies:
+  - name: my
+    params:
+      short_window: 20
+      long_window: 40
+
+  - name: macd
+    params:
+      fast: 12
+      slow: 26
+      signal: 9
+
+  - name: mean_reversion
+    params:
+      window: 20
+
+  - name: breakout
+    params:
+      lookback: 20
+data:
+  path: data/processed/sample_data.csv
