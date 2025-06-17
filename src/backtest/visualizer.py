@@ -13,7 +13,7 @@ def plot_equity_curve(df: pd.DataFrame, output_path="reports/equity_curve.png"):
 
     # 繪圖
     plt.figure(figsize=(10, 5))
-    plt.plot(df["Date"], df["Cumulative PNL"], label="Cumulative PNL", color="blue", linewidth=2)
+    plt.plot(df["timestamp"], df["Cumulative PNL"], label="Cumulative PNL", color="blue", linewidth=2)
     plt.title("Equity Curve")
     plt.xlabel("Date")
     plt.ylabel("Cumulative PNL")

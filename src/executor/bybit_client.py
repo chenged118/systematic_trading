@@ -38,25 +38,3 @@ print("account_info: ",  account_info)
 
 wallet_balance = session.get_wallet_balance(accountType="UNIFIED")
 print("wallet_balance: ",  wallet_balance)
-
-# # 初始化 Bybit client
-# client = bybit(
-#     test=testnet,
-#     api_key=api_key,
-#     api_secret=api_secret
-# )
-
-# # 查詢帳戶餘額
-# balance = client.Wallet.Wallet_getBalance(coin="USDT").result()
-# print("帳戶餘額：", balance)
-
-# # 測試下單：限價單
-# order = client.Order.Order_new(
-#     side="Buy",
-#     symbol="BTCUSDT",
-#     order_type="Limit",
-#     qty=0.01,
-#     price=20000,
-#     time_in_force="GoodTillCancel"
-# ).result()
-# print("下單結果：", order)

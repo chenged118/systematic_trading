@@ -12,7 +12,7 @@ def load_strategy_from_config(config: dict):
     """
     根據設定檔載入單一或多策略
     """
-    strategy_cfg = config['strategy']
+    strategy_cfg = config['strategies']
     
     if isinstance(strategy_cfg, list):
         # 多策略 → 使用 CompositeStrategy 包起來
@@ -42,15 +42,20 @@ def main():
         config = yaml.safe_load(f)
 
     # 載入策略（單一或多策略）
+    print("載入策略（單一或多策略）...")
     strategy = load_strategy_from_config(config)
 
     # 初始化執行器（模擬環境）
+    print("初始化執行器（模擬環境）...")
     executor = Simulator()
 
     # 建立交易引擎
+    print("建立交易引擎...")
     engine = TradingEngine(strategy=strategy, executor=executor)
 
     # 啟動主流程
+    print("啟動主流程...")
+    logger.info("交易引擎啟動中...")
     engine.run()
 
 if __name__ == "__main__":
