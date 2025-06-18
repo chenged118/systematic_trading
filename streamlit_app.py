@@ -22,14 +22,12 @@ if page == "首頁":
 elif page == "自動交易":
     st.title("🤖 自動交易")
     st.info("此頁面將串接 Bybit 並進行下單。")
-    # TODO: 在這裡載入自動交易模組
-    # from src.auto_trader import run_autotrader
-    # run_autotrader()
+    from src.auto_trader.auto_trader import run_autotrader
+    run_autotrader()
 
 elif page == "歷史回測":
     st.title("📈 歷史資料回測")
     st.info("此頁面將讀取歷史資料並進行策略回測。")
-    # TODO: 在這裡載入回測模組（例如你原本的 web_dashboard/app.py）
     from src.web_dashboard.Backtest import run_backtest_dashboard
     run_backtest_dashboard()
     
