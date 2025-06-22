@@ -4,6 +4,7 @@ import threading
 import time
 from src.auto_trader.state import state
 from src.executor.bybit_executor import BybitExecutor
+from src.auto_trader.order_ws import start_ws
 from src.strategies import get_strategy
 from data.loader import load_market_data
 
@@ -21,6 +22,9 @@ class AutoTraderService:
             self.running = True
             self.thread = threading.Thread(target=self.run_loop)
             self.thread.start()
+
+        # 啟動 WebSocket 訂單監控
+        start_ws()
 
     def stop(self):
         self.running = False

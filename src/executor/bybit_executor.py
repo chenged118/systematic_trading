@@ -101,14 +101,20 @@ class BybitExecutor(AbstractExecutor):
             print(f"❌ 無法取得歷史成交紀錄: {e}")
             return pd.DataFrame()
         
-    def get_open_orders(self, symbol="BTCUSDT"):
+    def get_open_orders(self, symbol="BTCUSDT", category="spot", limit=50):
         try:
-            result = self.session.get_open_orders(
-                category="linear",
-                symbol=symbol
+            response = self.session.get_open_orders(
+                category=category,  # "spot" 或 "linear"
+                symbol=symbol,
+                limit=limit
             )
-            orders = result.get("result", {}).get("list", [])
-            return orders
+            orders = response.get("result", {}).get("list", [])
+            if not orders:
+                return pd.DataFrame()
+
+            df = pd.DataFrame(orders)
+            df["createdTime"] = pd.to_datetime(df["createdTime"], unit="ms")
+            return df[["orderId", "symbol", "side", "orderType", "qty", "price", "createdTime", "orderStatus"]]
         except Exception as e:
-            print(f"❌ 無法取得當前訂單: {e}")
-            return []
+            print(f"❌ 無法取得掛單資訊: {e}")
+            return pd.DataFrame()

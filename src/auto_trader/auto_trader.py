@@ -6,6 +6,10 @@ def run_autotrader():
     import pandas as pd
     from dotenv import load_dotenv
 
+    from src.auto_trader.order_ws import start_ws
+    from src.auto_trader.state import state
+    from streamlit_autorefresh import st_autorefresh
+
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
     from src.executor.bybit_executor import BybitExecutor
 
@@ -81,14 +85,48 @@ def run_autotrader():
     status = "🟢 已啟動" if st.session_state.auto_trade_enabled else "🔴 未啟動"
     st.write(f"目前狀態：{status}")
 
-    # 4️⃣ 顯示當前訂單狀態
-    st.subheader("📦 當前訂單狀態")
+    # 4️⃣ 顯示當前掛單狀態
+    st.subheader("📡 當前掛單狀態")
     try:
-        orders = executor.get_open_orders()
-        if orders:
-            order_df = pd.DataFrame(orders)
-            st.dataframe(order_df[["orderId", "symbol", "side", "orderType", "qty", "price", "orderStatus"]])
+        open_orders_df = executor.get_open_orders(symbol="BTCUSDT", category="spot")
+        if not open_orders_df.empty:
+            st.dataframe(open_orders_df)
         else:
-            st.info("目前沒有任何開倉中的訂單。")
+            st.info("目前沒有掛單。")
     except Exception as e:
-        st.error(f"❌ 無法取得訂單資訊：{e}")
+        st.error(f"無法取得掛單資訊：{e}")
+
+    # ✅ 啟動 WebSocket
+    start_ws()
+
+    # ✅ 自動刷新畫面
+    st_autorefresh(interval=5000, key="autorefresh")
+
+    # 4️⃣ 顯示當前訂單狀態
+    # st.subheader("📦 當前訂單狀態")
+    # try:
+    #     orders = executor.get_open_orders()
+    #     if orders:
+    #         order_df = pd.DataFrame(orders)
+    #         st.dataframe(order_df[["orderId", "symbol", "side", "orderType", "qty", "price", "orderStatus"]])
+    #     else:
+    #         st.info("目前沒有任何開倉中的訂單。")
+    # except Exception as e:
+    #     st.error(f"❌ 無法取得訂單資訊：{e}")
+
+    st.subheader("📡 最新訂單狀態")
+    
+    if state.order_logs:
+        df = pd.DataFrame(state.order_logs)
+        
+        # 顯示選擇欄位與排序
+        cols = ["topic", "symbol", "side", "orderType", "price", "qty", "orderStatus", "timestamp"]
+        display_df = df[[col for col in cols if col in df.columns]].copy()
+
+        # 時間格式
+        display_df["timestamp"] = pd.to_datetime(display_df["timestamp"], unit="s")
+        display_df = display_df.sort_values("timestamp", ascending=False).head(10)
+
+        st.dataframe(display_df, use_container_width=True)
+    else:
+        st.info("尚無訂單狀態更新")
