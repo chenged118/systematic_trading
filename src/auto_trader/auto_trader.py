@@ -8,6 +8,8 @@ def run_autotrader():
 
     from src.auto_trader.order_ws import start_ws
     from src.auto_trader.state import state
+    from src.auto_trader.auto_trader_service import AutoTraderService
+    from src.strategies import get_strategy_names
     from streamlit_autorefresh import st_autorefresh
 
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
@@ -69,21 +71,53 @@ def run_autotrader():
     except Exception as e:
         st.error(f"❌ 無法取得歷史交易紀錄：{e}")
 
+    # # 3️⃣ 啟用／停用 自動交易
+    # st.subheader("⚙️ 自動交易狀態")
+
+    # if "auto_trade_enabled" not in st.session_state:
+    #     st.session_state.auto_trade_enabled = False
+
+    # def toggle_autotrade():
+    #     st.session_state.auto_trade_enabled = not st.session_state.auto_trade_enabled
+
+    # btn_label = "✅ 停止自動交易" if st.session_state.auto_trade_enabled else "🚀 啟動自動交易"
+    # if st.button(btn_label):
+    #     toggle_autotrade()
+
+    # status = "🟢 已啟動" if st.session_state.auto_trade_enabled else "🔴 未啟動"
+    # st.write(f"目前狀態：{status}")
+
     # 3️⃣ 啟用／停用 自動交易
     st.subheader("⚙️ 自動交易狀態")
 
-    if "auto_trade_enabled" not in st.session_state:
-        st.session_state.auto_trade_enabled = False
+    # 🎯 策略選擇
+    all_strategies = get_strategy_names()  # 回傳像 ["SmaCross", "RsiStrategy"]
+    selected_strategy = st.selectbox("選擇策略", all_strategies)
 
-    def toggle_autotrade():
-        st.session_state.auto_trade_enabled = not st.session_state.auto_trade_enabled
+    # 🎯 停損參數設定
+    stop_loss_pct = st.slider("停損百分比 (%)", min_value=0.0, max_value=0.2, value=0.05, step=0.01)
 
-    btn_label = "✅ 停止自動交易" if st.session_state.auto_trade_enabled else "🚀 啟動自動交易"
-    if st.button(btn_label):
-        toggle_autotrade()
+    # 🟢 啟動／關閉自動交易
+    if not state.is_running:
+        if st.button("🚀 啟動自動交易"):
+            state.service = AutoTraderService(
+                strategy_name=selected_strategy,
+                stop_loss_pct=stop_loss_pct,
+                interval_sec=10
+            )
+            state.service.start()
+            state.is_running = True
+            st.success(f"✅ 自動交易已啟動（策略：{selected_strategy}）")
+    else:
+        if st.button("🛑 停止自動交易"):
+            if state.service:
+                state.service.stop()
+            state.is_running = False
+            state.service = None
+            st.warning("🛑 自動交易已停止")
 
-    status = "🟢 已啟動" if st.session_state.auto_trade_enabled else "🔴 未啟動"
-    st.write(f"目前狀態：{status}")
+    # 📊 狀態顯示
+    st.write(f"目前狀態：{'🟢 已啟動' if state.is_running else '🔴 未啟動'}")
 
     # 4️⃣ 顯示當前掛單狀態
     st.subheader("📡 當前掛單狀態")

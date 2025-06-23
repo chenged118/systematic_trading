@@ -23,6 +23,9 @@ def get_strategy(name: str, **kwargs) -> BaseStrategy:
         raise ValueError(f"❌ 未註冊策略：{name}")
     return STRATEGY_REGISTRY[name](**kwargs)
 
+def get_strategy_names():
+    return list(STRATEGY_REGISTRY.keys())
+
 def get_strategies_from_config(strategy_cfg: dict) -> BaseStrategy:
     if isinstance(strategy_cfg, list):
         # 多策略 → 使用 CompositeStrategy 包起來
