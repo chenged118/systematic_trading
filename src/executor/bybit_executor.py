@@ -31,23 +31,27 @@ class BybitExecutor(AbstractExecutor):
 
     def execute_order(self, side: str, amount: float, price: float):
         try:
+            print(f"🔔 正在執行訂單：{side} {amount} BTC @ {price} USDT")
             if side == "BUY":
+                print(f"🔔 嘗試下單：{side} {amount} BTC @ 市價")
                 order = self.session.place_order(
-                    category="linear",
+                    category="spot",  # 'linear' or 'spot' or 'inverse'
                     symbol="BTCUSDT",
                     side="Buy",
-                    order_type="Market",
-                    qty=amount,
-                    time_in_force="GoodTillCancel"
+                    orderType="Limit",
+                    qty=str(amount),
+                    price="80000",
+                    timeInForce="GTC"  # Good Till Cancel
                 )
+                print(f"✅ 成功取得回應，order: {order}")
             elif side == "SELL":
                 order = self.session.place_order(
-                    category="linear",
+                    category="spot",  # 'linear' or 'spot' or 'inverse'
                     symbol="BTCUSDT",
                     side="Sell",
                     order_type="Market",
-                    qty=amount,
-                    time_in_force="GoodTillCancel"
+                    qty=str(amount),
+                    timeInForce="GTC"  # Good Till Cancel
                 )
             elif side == "HOLD":
                 return {
@@ -70,6 +74,7 @@ class BybitExecutor(AbstractExecutor):
             }
 
         except Exception as e:
+            print(f"❌ 訂單執行失敗: {e}")
             return {
                 "timestamp": str(datetime.datetime.now()),
                 "side": side,

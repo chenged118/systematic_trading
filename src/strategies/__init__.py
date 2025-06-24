@@ -1,14 +1,15 @@
 # src/strategies/__init__.py
 
 from .base import BaseStrategy
+from .test_strategy import TestStrategy
 from .my_strategy import MyStrategy
 from .mean_reversion import MeanReversionStrategy
 from .composite_strategy import CompositeStrategy
 from .macd_strategy import MACDStrategy
 from .breakout import BreakoutStrategy
 
-
 STRATEGY_REGISTRY = {
+    "test": TestStrategy,  # 測試用策略
     "my": MyStrategy,
     "mean_reversion": MeanReversionStrategy,
     "macd": MACDStrategy,
