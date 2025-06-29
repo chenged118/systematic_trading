@@ -122,7 +122,7 @@ def run_autotrader():
     # 4️⃣ 顯示當前掛單狀態
     st.subheader("📡 當前掛單狀態")
     try:
-        open_orders_df = executor.get_open_orders(symbol="BTCUSDT", category="spot")
+        open_orders_df = executor.get_open_orders(symbol="BTCUSDT", category="linear")
         if not open_orders_df.empty:
             st.dataframe(open_orders_df)
         else:

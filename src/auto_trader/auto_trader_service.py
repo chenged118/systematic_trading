@@ -46,9 +46,9 @@ class AutoTraderService:
 
                 print(f"🔔 正在送出訂單：{signal} {last_price} BTC @ 市價")
                 if signal == "BUY":
-                    self.executor.execute_order("BUY", 0.0001, last_price)
+                    self.executor.execute_order("BUY", 0.001, last_price)
                 elif signal == "SELL":
-                    self.executor.execute_order("SELL", 0.0001, last_price) 
+                    self.executor.execute_order("SELL", 0.001, last_price) 
 
                 # TODO: 加入停損檢查邏輯
                 # 例如持倉虧損超過一定比例就賣出
@@ -70,7 +70,7 @@ class AutoTraderService:
         """
         try:
             response = self.executor.session.get_kline(
-                category="spot",  # "linear" 為合約；"spot" 為現貨
+                category="linear",  # "linear" 為合約；"spot" 為現貨
                 symbol=symbol,
                 interval=interval,
                 limit=limit

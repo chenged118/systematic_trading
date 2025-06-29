@@ -35,22 +35,25 @@ class BybitExecutor(AbstractExecutor):
             if side == "BUY":
                 print(f"🔔 嘗試下單：{side} {amount} BTC @ 市價")
                 order = self.session.place_order(
-                    category="spot",  # 'linear' or 'spot' or 'inverse'
+                    category="linear",  # 'linear' or 'spot' or 'inverse'
                     symbol="BTCUSDT",
                     side="Buy",
                     orderType="Limit",
-                    qty=str(amount),
+                    qty=str(amount), # linear 的 qty 表示張數，最小為 1 張
+                    marketUnit="quoteCurrency",  # quote = usdt，base=btc
                     price="80000",
                     timeInForce="GTC"  # Good Till Cancel
                 )
                 print(f"✅ 成功取得回應，order: {order}")
             elif side == "SELL":
                 order = self.session.place_order(
-                    category="spot",  # 'linear' or 'spot' or 'inverse'
+                    category="linear",  # 'linear' or 'spot' or 'inverse'
                     symbol="BTCUSDT",
                     side="Sell",
-                    order_type="Market",
+                    order_type="Limit",
                     qty=str(amount),
+                    marketUnit="quoteCurrency",  # quote = usdt，base=btc
+                    price="200000",
                     timeInForce="GTC"  # Good Till Cancel
                 )
             elif side == "HOLD":
@@ -91,7 +94,7 @@ class BybitExecutor(AbstractExecutor):
     def get_trade_history(self, symbol="BTCUSDT", limit=50):
         try:
             response = self.session.get_executions(
-                category="spot",  # 'linear' or 'spot' or 'inverse'
+                category="linear",  # 'linear' or 'spot' or 'inverse'
                 symbol=symbol,
                 limit=limit
             )
@@ -106,7 +109,7 @@ class BybitExecutor(AbstractExecutor):
             print(f"❌ 無法取得歷史成交紀錄: {e}")
             return pd.DataFrame()
         
-    def get_open_orders(self, symbol="BTCUSDT", category="spot", limit=50):
+    def get_open_orders(self, symbol="BTCUSDT", category="linear", limit=50):
         try:
             response = self.session.get_open_orders(
                 category=category,  # "spot" 或 "linear"
