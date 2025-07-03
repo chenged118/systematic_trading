@@ -15,10 +15,10 @@ git commit -m "$1"
 
 # Push 到 GitHub（origin）
 echo "🚀 Push to GitHub..."
-git push github main
+git push github main --force
 
 # Push 到 GitLab（gitlab）
 echo "🚀 Push to GitLab..."
-git push gitlab main
+git push gitlab main --force
 
 echo "✅ 推送完成"
